@@ -184,9 +184,12 @@ router.get('/dashboard/:userId', async (req, res) => {
             return res.status(404).json({ message: 'No items found for this user' });
         }
 
-        // Create a map of item names and expiry dates
+        // Create a map of item names to an array of { id, expiryDate }
         const itemMap = items.reduce((map, item) => {
-            map[item.name] = item.expiryDate;
+            if (!map[item.name]) {
+                map[item.name] = [];
+            }
+            map[item.name].push({ id: item._id, expiryDate: item.expiryDate });
             return map;
         }, {});
 
@@ -198,6 +201,7 @@ router.get('/dashboard/:userId', async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+
 
 
 router.get('/statistics/:userId', async (req, res) => {
